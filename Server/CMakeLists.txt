@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(${BINARY} main.cpp)
 
-add_subdirectory(Server ThreadPool)
+add_subdirectory(Server)
 
-include_directories(Server ThreadPool)
+include_directories(Server)
 
 target_link_libraries(${BINARY} PUBLIC
-                      ${BINARY}_server ${BINARY}_thread_pool)
+                      ${BINARY}_server)
