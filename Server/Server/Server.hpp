@@ -22,8 +22,11 @@ public:
 private:
   void handle_get(const http_request& request);
   void handle_post(const http_request& request);
-  static json::value construct_reply(const std::string& msg);
+  static json::value construct_reply();
   static void handle_unknown_request(const http_request& request);
+
+  static const std::string user_key;
+  static const std::string msg_key;
 };
 
 #endif //SERVER_SERVER_HPP_
