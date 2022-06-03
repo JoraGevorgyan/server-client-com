@@ -3,10 +3,9 @@
 
 #include <string>
 
-class ThreadPool
-{
+class ThreadPool {
 public:
-	std::string foo(const std::string& tmp);
+  std::string foo(const std::string& tmp);
 };
 
 #endif //SERVER_THREADPOOL_THREADPOOL_HPP_

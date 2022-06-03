@@ -2,6 +2,6 @@
 
 int main()
 {
-	auto tmp = Server();
-	tmp.print("au");
+  auto tmp = Server();
+  tmp.print("au");
 }
