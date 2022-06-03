@@ -58,7 +58,24 @@ void Client::show_messages()
 
 void Client::update_messages()
 {
+  auto new_messages = get_from_server();
 
+}
+
+json::value Client::get_from_server()
+{
+  _self.request(methods::GET).then([](const http_response& response) {
+        if (response.status_code() == status_codes::OK) {
+          response.extract_json();
+        }
+        return pplx::task_from_result(json::value());
+      })
+      .then([](const pplx::task<json::value>& prevTask) {
+        return prevTask.get();
+      }).wait();
+
+  std::cerr << "Something went wrong ... can't get from server!!" << std::endl;
+  return json::value::string("");
 }
 
 char Client::get_choice()

@@ -23,6 +23,7 @@ private:
   void show_messages();
   void send(const std::string& partner, const std::string& msg);
   void update_messages();
+  json::value get_from_server();
   static char get_choice();
 };
 
