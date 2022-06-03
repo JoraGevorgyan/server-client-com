@@ -28,12 +28,13 @@ void Server::start()
 
 void Server::handle_get(const http_request& request)
 {
+  std::cout << "got 'get' request" << std::endl;
   request.reply(status_codes::OK, construct_reply());
 }
 
 void Server::handle_post(const http_request& request)
 {
-  std::cout << "SERVER: got 'post' request" << std::endl;
+  std::cout << "got 'post' request" << std::endl;
 }
 
 json::value Server::construct_reply()

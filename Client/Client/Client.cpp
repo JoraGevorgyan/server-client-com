@@ -72,10 +72,13 @@ void Client::show_messages()
 
 void Client::update_messages()
 {
-  const auto messages_json = get_from_server().as_array();
-  for (const auto& it : messages_json) {
-    const auto user = it.at(user_key).as_string();
-    const auto message = it.at(msg_key).as_string();
+  const auto response = get_from_server();
+  if (response.is_null()) {
+    return;
+  }
+  for (const auto& msg_json : response.as_array()) {
+    const auto user = msg_json.at(user_key).as_string();
+    const auto message = msg_json.at(msg_key).as_string();
     _messages[user].emplace_back(message);
   }
 }
@@ -96,7 +99,7 @@ json::value Client::get_from_server()
       }).wait();
 
   std::cerr << "Can't get from server!!" << std::endl;
-  return json::value::string("");
+  return {};
 }
 
 char Client::get_choice()
