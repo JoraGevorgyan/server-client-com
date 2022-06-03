@@ -16,7 +16,8 @@ void Server::start()
 {
   _listener.support(methods::GET,
       [this](auto&& arg) { handle_get(std::forward<decltype(arg)>(arg)); });
-  _listener.support(methods::POST, &Server::handle_unknown_request);
+  _listener.support(methods::POST,
+      [this](auto&& arg) { handle_post(std::forward<decltype(arg)>(arg)); });
   _listener.support(methods::PUT, &Server::handle_unknown_request);
   _listener.support(methods::DEL, &Server::handle_unknown_request);
   _listener.open().wait();
@@ -24,7 +25,12 @@ void Server::start()
 
 void Server::handle_get(const http_request& request)
 {
-  std::cout << "SERVER: got a request" << std::endl;
+  std::cout << "SERVER: got 'get' request" << std::endl;
+}
+
+void Server::handle_post(const http_request& request)
+{
+  std::cout << "SERVER: got 'post' request" << std::endl;
 }
 
 json::value Server::construct_reply(const std::string& msg)
