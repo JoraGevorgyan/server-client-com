@@ -1,5 +1,8 @@
 #include "Client.hpp"
 
+const std::string Client::user_key = "username";
+const std::string Client::msg_key = "message";
+
 Client::Client(const utility::string_t& address, std::string username)
     :_username(std::move(username)),
      _self(address, http_client_config()),
@@ -47,9 +50,9 @@ void Client::show_messages()
     std::cout << "You have no unread messages right now!" << std::endl;
     return;
   }
-  for (const auto& tmp: _messages) {
+  for (const auto& tmp : _messages) {
     std::cout << "From " << tmp.first << ": " << std::endl;
-    for (const auto& message: tmp.second) {
+    for (const auto& message : tmp.second) {
       std::cout << "\t" << message << std::endl;
     }
   }
@@ -58,8 +61,12 @@ void Client::show_messages()
 
 void Client::update_messages()
 {
-  auto new_messages = get_from_server();
-
+  const auto messages_json = get_from_server().as_array();
+  for (const auto& it : messages_json) {
+    const auto user = it.at(user_key).as_string();
+    const auto message = it.at(msg_key).as_string();
+    _messages[user].emplace_back(message);
+  }
 }
 
 json::value Client::get_from_server()

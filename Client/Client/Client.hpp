@@ -25,6 +25,9 @@ private:
   void update_messages();
   json::value get_from_server();
   static char get_choice();
+
+  static const std::string user_key;
+  static const std::string msg_key;
 };
 
 #endif //CLIENT_CLIENT_HPP
