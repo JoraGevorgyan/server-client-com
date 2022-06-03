@@ -24,7 +24,7 @@ void Server::start()
 
 void Server::handle_get(const http_request& request)
 {
-
+  std::cout << "SERVER: got a request" << std::endl;
 }
 
 json::value Server::construct_reply(const std::string& msg)
