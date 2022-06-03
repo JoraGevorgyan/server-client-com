@@ -31,17 +31,28 @@ void Client::start_chat(int duration)
 void Client::send()
 {
   std::string partner;
-  std::string msg;
+  std::string msg_content;
   std::cout << "partner's username: ";
   std::cin >> partner;
   std::cout << "message: ";
-  std::cin >> msg;
-  send(partner, msg);
+  std::cin >> msg_content;
+
+  json::value message;
+  message[user_key] = json::value::string(partner);
+  message[msg_key] = json::value::string(msg_content);
+  send(message);
 }
 
-void Client::send(const std::string& partner, const std::string& msg)
+void Client::send(const json::value& message_json)
 {
-
+  _self.request(methods::POST).then([](const http_response& response) {
+    if (response.status_code() != status_codes::OK) {
+      std::cerr << "Can't send a message to server!!" << std::endl;
+    }
+    else {
+      std::cout << "sent!" << std::endl;
+    }
+  }).wait();
 }
 
 void Client::show_messages()
@@ -75,13 +86,16 @@ json::value Client::get_from_server()
         if (response.status_code() == status_codes::OK) {
           response.extract_json();
         }
+        else {
+          std::cerr << "Can't get messages from server!!";
+        }
         return pplx::task_from_result(json::value());
       })
       .then([](const pplx::task<json::value>& prevTask) {
         return prevTask.get();
       }).wait();
 
-  std::cerr << "Something went wrong ... can't get from server!!" << std::endl;
+  std::cerr << "Can't get from server!!" << std::endl;
   return json::value::string("");
 }
 

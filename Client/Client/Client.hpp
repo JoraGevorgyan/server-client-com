@@ -21,7 +21,7 @@ public:
 private:
   void send();
   void show_messages();
-  void send(const std::string& partner, const std::string& msg);
+  void send(const json::value& message_json);
   void update_messages();
   json::value get_from_server();
   static char get_choice();
