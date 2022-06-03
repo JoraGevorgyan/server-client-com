@@ -5,7 +5,7 @@ const std::string Server::msg_key = "message";
 
 Server::Server(const std::string& listening_port)
 {
-  uri_builder uri(U("http://*:") + listening_port);
+  uri_builder uri(U("http://0.0.0.0:") + listening_port);
   const auto uri_address = uri.to_uri().to_string();
   _listener = http_listener(uri_address, http_listener_config());
 }
