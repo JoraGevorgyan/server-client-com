@@ -45,14 +45,13 @@ void Client::send()
 
 void Client::send(const json::value& message_json)
 {
-  _self.request(methods::POST).then([](const http_response& response) {
-    if (response.status_code() != status_codes::OK) {
-      std::cerr << "Can't send a message to server!!" << std::endl;
-    }
-    else {
-      std::cout << "sent!" << std::endl;
-    }
-  }).wait();
+  http_request request(methods::POST);
+  const auto response = _self.request(request).get();
+  if (response.status_code() != status_codes::OK) {
+    std::cerr << "Can't send a message to server!!" << std::endl;
+    return;
+  }
+  std::cout << "Sent!" << std::endl;
 }
 
 void Client::show_messages()
@@ -85,21 +84,13 @@ void Client::update_messages()
 
 json::value Client::get_from_server()
 {
-  _self.request(methods::GET).then([](const http_response& response) {
-        if (response.status_code() == status_codes::OK) {
-          response.extract_json();
-        }
-        else {
-          std::cerr << "Can't get messages from server!!";
-        }
-        return pplx::task_from_result(json::value());
-      })
-      .then([](const pplx::task<json::value>& prevTask) {
-        return prevTask.get();
-      }).wait();
-
-  std::cerr << "Can't get from server!!" << std::endl;
-  return {};
+  http_request request(methods::GET);
+  const auto response = _self.request(request).get();
+  if (response.status_code() != status_codes::OK) {
+    std::cerr << "Can't get messages from server!!";
+    return {};
+  }
+  return response.extract_json(true).get();
 }
 
 char Client::get_choice()
