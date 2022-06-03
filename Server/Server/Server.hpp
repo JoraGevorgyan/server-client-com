@@ -6,14 +6,23 @@
 
 #include "ThreadPool.hpp"
 
-namespace http = web::http;
-namespace listener = http::experimental::listener;
+using namespace web;
+using namespace web::http;
+using namespace web::http::experimental::listener;
 
 class Server {
 private:
+  http_listener _listener;
 
 public:
-  void print(const std::string& tmp);
+  explicit Server(const std::string& listening_port);
+  ~Server();
+  void start();
+
+private:
+  void handle_get(const http_request& request);
+  static json::value construct_reply(const std::string& msg);
+  static void handle_unknown_request(const http_request& request);
 };
 
 #endif //SERVER_SERVER_SERVER_HPP_
