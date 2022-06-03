@@ -1,5 +1,5 @@
-#ifndef SERVER_SERVER_SERVER_HPP_
-#define SERVER_SERVER_SERVER_HPP_
+#ifndef SERVER_SERVER_HPP_
+#define SERVER_SERVER_HPP_
 
 #include <cpprest/http_listener.h>
 #include <cpprest/json.h>
@@ -25,4 +25,4 @@ private:
   static void handle_unknown_request(const http_request& request);
 };
 
-#endif //SERVER_SERVER_SERVER_HPP_
+#endif //SERVER_SERVER_HPP_
