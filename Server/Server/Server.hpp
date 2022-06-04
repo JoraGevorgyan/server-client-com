@@ -12,6 +12,7 @@ using namespace web::http::experimental::listener;
 
 class Server {
 private:
+  std::unordered_map<std::string, std::vector<json::value>> _unread_messages;
   http_listener _listener;
 
 public:
@@ -22,7 +23,7 @@ public:
 private:
   void handle_get(const http_request& request);
   void handle_post(const http_request& request);
-  static json::value construct_reply();
+  json::value unread_messages(const std::string& username);
   static void handle_unknown_request(const http_request& request);
 
   static const std::string user_key;

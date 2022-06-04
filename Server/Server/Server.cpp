@@ -32,8 +32,8 @@ void Server::handle_get(const http_request& request)
   try {
     const auto body = request.extract_json(true).get();
     const auto username = body.at(user_key).as_string();
-    std::cout << "got 'get' request from " << username << std::endl;
-    request.reply(status_codes::OK, construct_reply());
+    request.reply(status_codes::OK, unread_messages(username));
+    std::cout << "The all messages addressed to " << username << " are sent!" << std::endl;
   }
   catch (const json::json_exception& exc) {
     request.reply(status_codes::BadRequest, json::value::string(exc.what()));
@@ -43,27 +43,30 @@ void Server::handle_get(const http_request& request)
 void Server::handle_post(const http_request& request)
 {
   try {
-    std::cout << "got 'post' request" << std::endl;
     const auto body = request.extract_json().get();
-    std::cout << "user: " << body.at(user_key) << std::endl;
+    const auto username = body.at(user_key).as_string();
+    json::value message{};
+    message[partner_key] = body.at(partner_key);
+    message[msg_key] = body.at(msg_key);
+    _unread_messages[username].emplace_back(message);
+    std::cout << "received a message from " << username << std::endl;
     request.reply(status_codes::OK);
   }
   catch (const json::json_exception& exc) {
+    std::cerr << "server got key error when getting values from post request!" << std::endl;
     request.reply(status_codes::BadRequest, json::value::string(exc.what()));
   }
 }
 
-json::value Server::construct_reply()
+json::value Server::unread_messages(const std::string& username)
 {
-  json::value message;
-  message[user_key] = json::value::string("partner");
-  message[msg_key] = json::value::string("msg_content");
-  json::value res;
-  res[0] = message;
-  message[user_key] = json::value::string("partner_1111");
-  message[msg_key] = json::value::string("msg_content_1111");
-  res[1] = message;
-  return res;
+  json::value result{};
+  const auto it = _unread_messages.find(username);
+  if (it != _unread_messages.end()) {
+    result = json::value::array(it->second);
+    _unread_messages.erase(it);
+  }
+  return result;
 }
 
 void Server::handle_unknown_request(const http_request& request)
