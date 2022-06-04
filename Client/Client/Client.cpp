@@ -1,6 +1,7 @@
 #include "Client.hpp"
 
 const std::string Client::user_key = "username";
+const std::string Client::partner_key = "partner_name";
 const std::string Client::msg_key = "message";
 
 Client::Client(const utility::string_t& address, std::string username)
@@ -37,16 +38,15 @@ void Client::send()
   std::cout << "message: ";
   std::cin >> msg_content;
 
-  json::value message;
-  message[user_key] = json::value::string(partner);
+  auto message = username_json();
+  message[partner_key] = json::value::string(partner);
   message[msg_key] = json::value::string(msg_content);
   send(message);
 }
 
-void Client::send(const json::value& message_json)
+void Client::send(const json::value& body)
 {
-  http_request request(methods::POST);
-  const auto response = _self.request(request).get();
+  const auto response = _self.request(methods::POST, "", body).get();
   if (response.status_code() != status_codes::OK) {
     std::cerr << "Can't send a message to server!!" << std::endl;
     return;
@@ -84,13 +84,19 @@ void Client::update_messages()
 
 json::value Client::get_from_server()
 {
-  http_request request(methods::GET);
-  const auto response = _self.request(request).get();
+  const auto response = _self.request(methods::GET, "", username_json()).get();
   if (response.status_code() != status_codes::OK) {
     std::cerr << "Can't get messages from server!!";
     return {};
   }
   return response.extract_json(true).get();
+}
+
+inline json::value Client::username_json()
+{
+  json::value tmp;
+  tmp[user_key] = json::value::string(_username);
+  return tmp;
 }
 
 char Client::get_choice()

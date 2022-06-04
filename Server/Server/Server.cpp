@@ -46,6 +46,7 @@ void Server::handle_post(const http_request& request)
     std::cout << "got 'post' request" << std::endl;
     const auto body = request.extract_json().get();
     std::cout << "user: " << body.at(user_key) << std::endl;
+    request.reply(status_codes::OK);
   }
   catch (const json::json_exception& exc) {
     request.reply(status_codes::BadRequest, json::value::string(exc.what()));

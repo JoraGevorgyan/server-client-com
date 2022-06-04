@@ -21,12 +21,14 @@ public:
 private:
   void send();
   void show_messages();
-  void send(const json::value& message_json);
+  void send(const json::value& body);
   void update_messages();
   json::value get_from_server();
+  json::value username_json();
   static char get_choice();
 
   static const std::string user_key;
+  static const std::string partner_key;
   static const std::string msg_key;
 };
 
