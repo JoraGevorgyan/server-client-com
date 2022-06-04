@@ -1,6 +1,7 @@
 #include "Server.hpp"
 
 const std::string Server::user_key = "username";
+const std::string Server::partner_key = "partner_name";
 const std::string Server::msg_key = "message";
 
 Server::Server(const std::string& listening_port)
@@ -28,13 +29,27 @@ void Server::start()
 
 void Server::handle_get(const http_request& request)
 {
-  std::cout << "got 'get' request" << std::endl;
-  request.reply(status_codes::OK, construct_reply());
+  try {
+    const auto body = request.extract_json(true).get();
+    const auto username = body.at(user_key).as_string();
+    std::cout << "got 'get' request from " << username << std::endl;
+    request.reply(status_codes::OK, construct_reply());
+  }
+  catch (const json::json_exception& exc) {
+    request.reply(status_codes::BadRequest, json::value::string(exc.what()));
+  }
 }
 
 void Server::handle_post(const http_request& request)
 {
-  std::cout << "got 'post' request" << std::endl;
+  try {
+    std::cout << "got 'post' request" << std::endl;
+    const auto body = request.extract_json().get();
+    std::cout << "user: " << body.at(user_key) << std::endl;
+  }
+  catch (const json::json_exception& exc) {
+    request.reply(status_codes::BadRequest, json::value::string(exc.what()));
+  }
 }
 
 json::value Server::construct_reply()

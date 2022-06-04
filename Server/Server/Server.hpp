@@ -26,6 +26,7 @@ private:
   static void handle_unknown_request(const http_request& request);
 
   static const std::string user_key;
+  static const std::string partner_key;
   static const std::string msg_key;
 };
 
