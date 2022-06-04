@@ -14,7 +14,7 @@ void Client::start_chat(int duration)
   std::cout << "You just started a chat, your username is " << _username << std::endl;
   for (int i = 0; i < duration; ++i) {
     update_messages();
-    std::cout << "Type to send(1), read(2), exit(0): ";
+    std::cout << "\nType to send(1), read(2), exit(0): ";
     char choice = get_choice();
     if (choice == '0') {
       break;
@@ -109,6 +109,7 @@ char Client::get_choice()
 {
   char c;
   std::cin >> c;
+  std::cout << std::endl;
   if (c < '0' || c > '2') {
     return '0';
   }

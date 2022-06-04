@@ -49,7 +49,9 @@ void Server::handle_post(const http_request& request)
     message[partner_key] = body.at(partner_key);
     message[msg_key] = body.at(msg_key);
     _unread_messages[username].emplace_back(message);
-    std::cout << "received a message from " << username << std::endl;
+
+    std::cout << "received a message from " << body.at(partner_key).as_string()
+              << " for " << username << std::endl;
     request.reply(status_codes::OK);
   }
   catch (const json::json_exception& exc) {
