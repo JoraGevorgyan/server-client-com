@@ -33,9 +33,9 @@ void Client::send()
 {
   std::string partner;
   std::string msg_content;
-  std::cout << "partner's username: ";
+  std::cout << "name: ";
   std::cin >> partner;
-  std::cout << "message: ";
+  std::cout << "text: ";
   std::cin >> msg_content;
 
   auto message = username_json();
@@ -61,7 +61,7 @@ void Client::show_messages()
     return;
   }
   for (const auto& tmp : _messages) {
-    std::cout << "From " << tmp.first << ": " << std::endl;
+    std::cout << tmp.first << ": " << std::endl;
     for (const auto& message : tmp.second) {
       std::cout << "\t" << message << std::endl;
     }
