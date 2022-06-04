@@ -25,6 +25,7 @@ void Server::start()
   _listener.support(methods::PUT, &Server::handle_unknown_request);
   _listener.support(methods::DEL, &Server::handle_unknown_request);
   _listener.open().wait();
+  std::cout << "server is now waiting for requests!" << std::endl;
 }
 
 void Server::handle_get(const http_request& request)
