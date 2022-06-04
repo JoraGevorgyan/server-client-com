@@ -23,6 +23,7 @@ void Client::start_chat(int duration)
       send();
     }
     else {
+      update_messages();
       show_messages();
     }
   }
@@ -38,8 +39,9 @@ void Client::send()
   std::cout << "text: ";
   std::cin >> msg_content;
 
-  auto message = username_json();
-  message[partner_key] = json::value::string(partner);
+  json::value message{};
+  message[partner_key] = json::value::string(_username);
+  message[user_key] = json::value::string(partner);
   message[msg_key] = json::value::string(msg_content);
   send(message);
 }
@@ -71,32 +73,36 @@ void Client::show_messages()
 
 void Client::update_messages()
 {
-  const auto response = get_from_server();
-  if (response.is_null()) {
-    return;
+  try {
+    const auto response = get_from_server();
+    if (response.is_null()) {
+      return;
+    }
+    for (const auto& msg_json : response.as_array()) {
+      const auto partner = msg_json.at(partner_key).as_string();
+      const auto message = msg_json.at(msg_key).as_string();
+      _messages[partner].emplace_back(message);
+    }
   }
-  for (const auto& msg_json : response.as_array()) {
-    const auto user = msg_json.at(user_key).as_string();
-    const auto message = msg_json.at(msg_key).as_string();
-    _messages[user].emplace_back(message);
+  catch (const json::json_exception& exc) {
+    std::cerr << exc.what() << std::endl;
   }
 }
 
 json::value Client::get_from_server()
 {
-  const auto response = _self.request(methods::GET, "", username_json()).get();
-  if (response.status_code() != status_codes::OK) {
-    std::cerr << "Can't get messages from server!!";
-    return {};
+  json::value username{};
+  username[user_key] = json::value::string(_username);
+  const auto response = _self.request(methods::GET, "", username).get();
+  if (response.status_code() == status_codes::OK) {
+    return response.extract_json(true).get();
   }
-  return response.extract_json(true).get();
-}
-
-inline json::value Client::username_json()
-{
-  json::value tmp;
-  tmp[user_key] = json::value::string(_username);
-  return tmp;
+  if (response.status_code() == status_codes::BadRequest) {
+    std::cerr << "somehow we sent a bad request to server!" << std::endl;
+    std::cerr << response.extract_json(true).get() << std::endl;
+  }
+  std::cerr << "Can't get messages from server!!";
+  return {};
 }
 
 char Client::get_choice()

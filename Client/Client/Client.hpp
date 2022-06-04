@@ -24,7 +24,6 @@ private:
   void send(const json::value& body);
   void update_messages();
   json::value get_from_server();
-  json::value username_json();
   static char get_choice();
 
   static const std::string user_key;
