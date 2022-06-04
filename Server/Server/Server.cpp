@@ -9,6 +9,12 @@ Server::Server(const std::string& listening_port)
   uri_builder uri(U("http://0.0.0.0:") + listening_port);
   const auto uri_address = uri.to_uri().to_string();
   _listener = http_listener(uri_address, http_listener_config());
+  _listener.support(methods::GET,
+      [this](auto&& arg) { handle_get(std::forward<decltype(arg)>(arg)); });
+  _listener.support(methods::POST,
+      [this](auto&& arg) { handle_post(std::forward<decltype(arg)>(arg)); });
+  _listener.support(methods::PUT, &Server::handle_unknown_request);
+  _listener.support(methods::DEL, &Server::handle_unknown_request);
 }
 
 Server::~Server()
@@ -18,12 +24,6 @@ Server::~Server()
 
 void Server::start()
 {
-  _listener.support(methods::GET,
-      [this](auto&& arg) { handle_get(std::forward<decltype(arg)>(arg)); });
-  _listener.support(methods::POST,
-      [this](auto&& arg) { handle_post(std::forward<decltype(arg)>(arg)); });
-  _listener.support(methods::PUT, &Server::handle_unknown_request);
-  _listener.support(methods::DEL, &Server::handle_unknown_request);
   _listener.open().wait();
   std::cout << "server is now waiting for requests!" << std::endl;
 }
